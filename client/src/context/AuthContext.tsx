@@ -6,6 +6,19 @@ import { setAuthToken } from '../api/client';
 const TOKEN_KEY = 'numtalk_token';
 const USER_KEY = 'numtalk_user';
 
+const isBrowser = typeof window !== 'undefined';
+const safeGetItem = (key: string) => (isBrowser ? window.localStorage.getItem(key) : null);
+const safeSetItem = (key: string, value: string) => {
+  if (isBrowser) {
+    window.localStorage.setItem(key, value);
+  }
+};
+const safeRemoveItem = (key: string) => {
+  if (isBrowser) {
+    window.localStorage.removeItem(key);
+  }
+};
+
 type AuthContextShape = {
   user: AuthUser | null;
   token: string | null;
@@ -19,18 +32,18 @@ const AuthContext = createContext<AuthContextShape | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(() => {
-    const stored = localStorage.getItem(USER_KEY);
+    const stored = safeGetItem(USER_KEY);
     return stored ? (JSON.parse(stored) as AuthUser) : null;
   });
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState<string | null>(() => safeGetItem(TOKEN_KEY));
   const [loading, setLoading] = useState(Boolean(token));
 
   const loginMutation = useLogin();
   const registerMutation = useRegister();
 
   const persistSession = useCallback((nextToken: string, nextUser: AuthUser) => {
-    localStorage.setItem(TOKEN_KEY, nextToken);
-    localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
+    safeSetItem(TOKEN_KEY, nextToken);
+    safeSetItem(USER_KEY, JSON.stringify(nextUser));
     setAuthToken(nextToken);
     setToken(nextToken);
     setUser(nextUser);
@@ -53,8 +66,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    safeRemoveItem(TOKEN_KEY);
+    safeRemoveItem(USER_KEY);
     setAuthToken(null);
     setToken(null);
     setUser(null);
@@ -73,9 +86,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       try {
         const profile = await fetchProfile();
-        localStorage.setItem(USER_KEY, JSON.stringify(profile));
+        safeSetItem(USER_KEY, JSON.stringify(profile));
         setUser(profile);
       } catch (err) {
+        // Surfacing the failure once helps debug SSR/localStorage issues.
+        console.error('Failed to fetch profile', err);
         logout();
       } finally {
         setLoading(false);
@@ -93,6 +108,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) {
