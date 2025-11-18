@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OperationType {
+  START
+  ADD
+  SUBTRACT
+  MULTIPLY
+  DIVIDE
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  calculations Calculation[]
+}
+
+model Calculation {
+  id        Int            @id @default(autoincrement())
+  operation OperationType
+  operand   Float?
+  result    Float
+  parentId  Int?
+  authorId  Int
+  createdAt DateTime        @default(now())
+
+  parent   Calculation?     @relation("CalculationHierarchy", fields: [parentId], references: [id])
+  children Calculation[]    @relation("CalculationHierarchy")
+  author   User             @relation(fields: [authorId], references: [id])
+
+  @@index([parentId])
+  @@index([authorId])
+}

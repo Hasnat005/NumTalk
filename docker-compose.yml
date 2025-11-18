@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: numtalk
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  server:
+    build: ./server
+    command: ["node", "dist/index.js"]
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/numtalk?schema=public
+      JWT_SECRET: devsecret
+      PORT: 4000
+    ports:
+      - '4000:4000'
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: http://localhost:4000
+    depends_on:
+      - server
+    ports:
+      - '5173:80'
+volumes:
+  postgres-data:
