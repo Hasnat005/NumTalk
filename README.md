@@ -33,6 +33,8 @@ npx prisma generate
 npm run dev
 ```
 
+Set `ALLOWED_ORIGINS` in `server/.env` to a comma-separated list of front-end URLs (e.g., `http://localhost:5173,https://your-app.vercel.app`) so the API emits the proper CORS headers for both local dev and hosted builds.
+
 If you do not have Postgres locally, run the provided Docker Compose stack (below) and reuse the connection string from `docker-compose.yml`.
 
 Run tests and build checks:
@@ -51,7 +53,7 @@ npm install
 npm run dev
 ```
 
-The client reads `VITE_API_URL` from `client/.env` (defaults to `http://localhost:4000`).
+The client reads `VITE_API_URL` from Vite env files; `.env` now defaults to `http://localhost:4000` for local work. Override it per-environment (e.g., via `.env.production` locally or Vercel environment variables) when pointing to a hosted API.
 
 ### 3. Docker Compose
 
