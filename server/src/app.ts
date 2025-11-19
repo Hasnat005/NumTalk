@@ -20,7 +20,9 @@ const corsMiddleware = cors(corsOptions);
 app.use(corsMiddleware);
 app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
-    res.sendStatus(204);
+    corsMiddleware(req, res, () => {
+      res.sendStatus(204);
+    });
     return;
   }
   next();
