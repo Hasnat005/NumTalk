@@ -55,7 +55,26 @@ npm run dev
 
 The client reads `VITE_API_URL` from Vite env files; `.env` now defaults to `http://localhost:4000` for local work. Override it per-environment (e.g., via `.env.production` locally or Vercel environment variables) when pointing to a hosted API.
 
-### 3. Docker Compose
+### 3. Keeping Vercel + ngrok alive
+
+Vercel only reaches your API while the tunnel and local server are running. Each work session:
+
+```powershell
+# terminal 1 – API
+cd server
+npm run dev
+
+# terminal 2 – tunnel (ngrok account + reserved domain required)
+ngrok http 4000 --domain=newsworthy-kristian-noninterchangeably.ngrok-free.dev
+```
+
+Then:
+
+- Make sure `ALLOWED_ORIGINS` in `server/.env` lists `http://localhost:5173`, the ngrok domain, and `https://num-talk-git-main-hasnat005s-projects.vercel.app`.
+- Update Vercel’s `VITE_API_URL` env var to the current ngrok HTTPS URL and redeploy the frontend whenever the tunnel changes.
+- Verify the tunnel is really proxying your API (`Invoke-WebRequest https://<domain>/api/health`) so the response body is JSON, not the ngrok splash page shown in your screenshot.
+
+### 4. Docker Compose
 
 ```powershell
 cd project-root

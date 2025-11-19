@@ -18,6 +18,13 @@ const corsOptions: CorsOptions = {
 const corsMiddleware = cors(corsOptions);
 
 app.use(corsMiddleware);
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api', routes);
