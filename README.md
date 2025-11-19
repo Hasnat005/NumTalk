@@ -18,9 +18,9 @@ NumTalk is a full-stack assessment project where users build threaded discussion
 ## 3. Visual Demonstration
 > Engagement: Show, don't just tell. Include a screenshot or an animated GIF of the application running, if applicable.
 
-![NumTalk Demo](client\public\image.png)
+![NumTalk Demo](client/public/image.png)
 
-_Replace `client/public/vite.svg` with an actual screenshot or animated GIF to showcase the UI once captured._
+_Screenshot: Home view showing the calculation tree, authentication panel, and respond form running in Vite dev mode._
 
 ## 4. Table of Contents (TOC)
 > Navigation: Allows users to quickly jump to the Installation or Contributing sections if the README is long.
