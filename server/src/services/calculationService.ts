@@ -1,5 +1,4 @@
-import type { Prisma } from '../generated/prisma/client';
-import type { OperationType } from '../generated/prisma/enums';
+import type { Prisma, OperationType } from '@prisma/client';
 import { prisma } from '../db/prisma';
 import { HttpError } from '../types/httpError';
 import { OperationDTO } from '../types/operation';

@@ -1,4 +1,4 @@
-import { OperationType } from '../generated/prisma/enums';
+import { OperationType } from '@prisma/client';
 import { MUTATING_OPERATIONS } from '../types/operation';
 import { HttpError } from '../types/httpError';
 

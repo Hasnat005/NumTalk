@@ -1,4 +1,4 @@
-import { OperationType } from '../generated/prisma/enums';
+import { OperationType } from '@prisma/client';
 
 export type OperationDTO = {
   id: number;
